@@ -1,4 +1,4 @@
-import { formatPair, parseCoordinate } from "./converter.js";
+import { formatPair, parseCoordinate, unprojectFromWebMercator } from "./converter.js";
 import { initMap } from "./map.js";
 
 const form = document.querySelector("#converter-form");
@@ -8,6 +8,12 @@ const results = document.querySelector("#results");
 const emptyState = document.querySelector("#empty-state");
 const status = document.querySelector("#status");
 const sampleButton = document.querySelector("#sample-button");
+const reverseForm = document.querySelector("#reverse-form");
+const reverseXInput = document.querySelector("#reverse-x");
+const reverseYInput = document.querySelector("#reverse-y");
+const reverseResult = document.querySelector("#reverse-result");
+const reverseResultWrap = document.querySelector("#reverse-result-wrap");
+const reverseError = document.querySelector("#reverse-error");
 let mapController;
 
 function setError(input, message) {
@@ -64,10 +70,44 @@ for (const input of [latitudeInput, longitudeInput]) {
 }
 
 sampleButton.addEventListener("click", () => {
-  latitudeInput.value = "40° 26′ 46″ N";
-  longitudeInput.value = "79° 58′ 56″ W";
+  latitudeInput.value = "21.49012";
+  longitudeInput.value = "39.18624";
   convert();
 });
+
+reverseForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  reverseError.textContent = "";
+  reverseResultWrap.hidden = true;
+
+  const readMeters = (input, label) => {
+    const value = input.value.trim();
+    if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(value)) {
+      throw new Error(`Enter a decimal number for ${label}.`);
+    }
+    return Number(value);
+  };
+
+  try {
+    const x = readMeters(reverseXInput, "X");
+    const y = readMeters(reverseYInput, "Y");
+    const { latitude, longitude } = unprojectFromWebMercator(x, y);
+    latitudeInput.value = latitude.toFixed(8);
+    longitudeInput.value = longitude.toFixed(8);
+    convert();
+    reverseResult.textContent = formatPair(latitude, longitude, "signed");
+    reverseResultWrap.hidden = false;
+  } catch (error) {
+    reverseError.textContent = error.message;
+  }
+});
+
+for (const input of [reverseXInput, reverseYInput]) {
+  input.addEventListener("input", () => {
+    reverseError.textContent = "";
+    reverseResultWrap.hidden = true;
+  });
+}
 
 results.addEventListener("click", async (event) => {
   const button = event.target.closest("[data-copy]");

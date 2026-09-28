@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f5f3ed">
-    <meta name="description" content="Convert WGS 84 latitude and longitude into EPSG:3857 metres and common degree formats.">
+    <meta name="description" content="Convert WGS 84 latitude and longitude into EPSG:3857 meters and common degree formats.">
     <title>Coordinate Converter</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" href="./styles.css">
@@ -14,47 +14,67 @@
   <body>
     <main class="shell">
       <header class="masthead">
-        <div class="brand"><span class="brand-mark" aria-hidden="true">✳</span> FIELDNOTES <span class="brand-divider">/</span> TOOLS</div>
+        <!-- <div class="brand"><span class="brand-mark" aria-hidden="true">✳</span> FIELDNOTES <span class="brand-divider">/</span> TOOLS</div> -->
         <span class="edition">COORDINATE UTILITY · 01</span>
       </header>
 
       <section class="intro" aria-labelledby="page-title">
-        <div class="eyebrow"><span class="eyebrow-line"></span> GIS MADE SIMPLE</div>
-        <h1 id="page-title">Coordinates,<br><em>made clear.</em></h1>
-        <p>Find a place on the map or enter coordinates directly. Get Web Mercator metres and every common degree format in one view.</p>
+        <!-- <div class="eyebrow"><span class="eyebrow-line"></span> GIS MADE SIMPLE</div> -->
+        <h1 id="page-title">Coordinate Converter</h1>
+        <p>Find a place on the map or enter coordinates directly. Get Web Mercator meters and every common degree format in one view.</p>
+      </section>
+
+      <section class="map-panel" aria-labelledby="map-heading">
+        <div class="map-heading-row">
+          <div>
+            <div class="section-heading"><span class="step">01</span><h2 id="map-heading">Explore on a map</h2></div>
+            <p class="section-help">Search for a city, click anywhere on the map, or drag the pin to refine the location.</p>
+          </div>
+          <div class="map-coordinate-label">PIN LOCATION <span id="map-coordinate">21.490120, 39.186240</span></div>
+        </div>
+        <form id="city-search-form" class="city-search" role="search">
+          <label for="city-query" class="sr-only">Search for a city</label>
+          <input id="city-query" type="search" placeholder="Search a city, e.g. Jeddah, Saudi Arabia" autocomplete="off" minlength="2">
+          <button type="submit" id="city-search-button">Find city <span aria-hidden="true">↗</span></button>
+        </form>
+        <p id="map-message" class="map-message" role="status" aria-live="polite"></p>
+        <ul id="city-results" class="city-results" aria-label="City search results" hidden></ul>
+        <div id="map" class="map-canvas" aria-label="Interactive map with a draggable location pin"></div>
+        <p id="map-fallback" class="map-fallback" hidden>The map could not load. You can still enter and convert coordinates below.</p>
+        <div class="map-footer"><span>Use + and − to zoom. Map displays the Web Mercator area.</span><span>City data: <a href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noopener noreferrer">Open-Meteo</a> / <a href="https://www.geonames.org/" target="_blank" rel="noopener noreferrer">GeoNames</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div>
       </section>
 
       <div class="workspace">
         <section class="input-panel" aria-labelledby="input-heading">
-          <div class="section-heading"><span class="step">01</span><h2 id="input-heading">Your coordinates</h2></div>
+          <div class="section-heading"><span class="step">02</span><h2 id="input-heading">Your coordinates</h2></div>
           <p class="section-help">Enter WGS 84 (EPSG:4326) coordinates as decimal degrees, decimal minutes, or degrees + minutes + seconds. Add N, S, E, or W if needed.</p>
           <form id="converter-form" novalidate>
             <div class="field">
               <label for="latitude"><span>LATITUDE</span><span class="field-range">N / S · ±90°</span></label>
-              <input id="latitude" name="latitude" type="text" autocomplete="off" spellcheck="false" value="40° 26′ 46″ N" aria-describedby="latitude-hint latitude-error">
-              <small id="latitude-hint">Example: 40.446111 or 40° 26′ 46″ N</small>
+              <input id="latitude" name="latitude" type="text" autocomplete="off" spellcheck="false" value="21.49012" aria-describedby="latitude-hint latitude-error">
+              <small id="latitude-hint">Example: 21.49012 or 21° 29′ 24.43″ N</small>
               <span class="field-error" id="latitude-error" role="alert"></span>
             </div>
             <div class="field">
               <label for="longitude"><span>LONGITUDE</span><span class="field-range">E / W · ±180°</span></label>
-              <input id="longitude" name="longitude" type="text" autocomplete="off" spellcheck="false" value="79° 58′ 56″ W" aria-describedby="longitude-hint longitude-error">
-              <small id="longitude-hint">Example: -79.982222 or 79° 58.9333′ W</small>
+              <input id="longitude" name="longitude" type="text" autocomplete="off" spellcheck="false" value="39.18624" aria-describedby="longitude-hint longitude-error">
+              <small id="longitude-hint">Example: 39.18624 or 39° 11′ 10.46″ E</small>
               <span class="field-error" id="longitude-error" role="alert"></span>
             </div>
             <div class="input-actions">
               <button class="primary-button" type="submit">Convert coordinates <span aria-hidden="true">↗</span></button>
-              <button class="text-button" type="button" id="sample-button">Use sample</button>
+              <button class="text-button" type="button" id="sample-button">Reset to Jeddah</button>
             </div>
           </form>
         </section>
 
         <section class="output-panel" aria-labelledby="output-heading">
-          <div class="section-heading"><span class="step">02</span><h2 id="output-heading">Coordinate results</h2></div>
-          <p class="section-help">Results update as you type. EPSG:3857 is X, Y in metres; degree formats are latitude, longitude.</p>
+          <div class="section-heading"><span class="step">03</span><h2 id="output-heading">Coordinate results</h2></div>
+          <p class="section-help">Results update as you type. EPSG:3857 is X, Y in meters; degree formats are latitude, longitude.</p>
           <div id="empty-state" class="empty-state" hidden>Enter valid latitude and longitude values to see your conversions.</div>
           <div id="results" class="results">
             <div class="result-card featured">
-              <div class="result-head"><div><span class="result-index">01 / EPSG:3857 · METRES</span><h3>Web Mercator</h3></div><button type="button" class="copy-button" data-copy="EPSG:3857 coordinates" aria-label="Copy EPSG 3857 X and Y coordinates">Copy <span aria-hidden="true">↗</span></button></div>
+              <div class="result-head"><div><span class="result-index">01 / EPSG:3857 · METERS</span><h3>Web Mercator</h3></div><button type="button" class="copy-button" data-copy="EPSG:3857 coordinates" aria-label="Copy EPSG 3857 X and Y coordinates">Copy <span aria-hidden="true">↗</span></button></div>
               <p class="result-value" data-format="epsg3857"></p>
               <span class="result-note">X EASTING, Y NORTHING · AVAILABLE TO ±85.06° LATITUDE</span>
             </div>
@@ -79,24 +99,27 @@
         </section>
       </div>
 
-      <section class="map-panel" aria-labelledby="map-heading">
-        <div class="map-heading-row">
-          <div>
-            <div class="section-heading"><span class="step">03</span><h2 id="map-heading">Explore on a map</h2></div>
-            <p class="section-help">Search for a city, click anywhere on the map, or drag the pin to refine the location.</p>
+      <section class="reverse-panel" aria-labelledby="reverse-heading">
+        <div class="section-heading"><span class="step">04</span><h2 id="reverse-heading">Map meters to decimal degrees</h2></div>
+        <p class="section-help">Have EPSG:3857 decimal X/Y values? Enter easting (X) and northing (Y) in meters to get WGS 84 latitude and longitude in decimal degrees.</p>
+        <form id="reverse-form" class="reverse-form" novalidate>
+          <div class="field">
+            <label for="reverse-x"><span>X · EASTING</span><span class="field-range">METERS</span></label>
+            <input id="reverse-x" name="x" type="text" inputmode="decimal" spellcheck="false" placeholder="e.g. 4362192.28" aria-describedby="reverse-x-hint">
+            <small id="reverse-x-hint">Positive east, negative west</small>
           </div>
-          <div class="map-coordinate-label">PIN LOCATION <span id="map-coordinate">40.446111, -79.982222</span></div>
-        </div>
-        <form id="city-search-form" class="city-search" role="search">
-          <label for="city-query" class="sr-only">Search for a city</label>
-          <input id="city-query" type="search" placeholder="Search a city, e.g. Paris, France" autocomplete="off" minlength="2">
-          <button type="submit" id="city-search-button">Find city <span aria-hidden="true">↗</span></button>
+          <div class="field">
+            <label for="reverse-y"><span>Y · NORTHING</span><span class="field-range">METERS</span></label>
+            <input id="reverse-y" name="y" type="text" inputmode="decimal" spellcheck="false" placeholder="e.g. 2450417.04" aria-describedby="reverse-y-hint">
+            <small id="reverse-y-hint">Positive north, negative south</small>
+          </div>
+          <button class="primary-button" type="submit">Convert to decimal degrees <span aria-hidden="true">↗</span></button>
         </form>
-        <p id="map-message" class="map-message" role="status" aria-live="polite"></p>
-        <ul id="city-results" class="city-results" aria-label="City search results" hidden></ul>
-        <div id="map" class="map-canvas" aria-label="Interactive map with a draggable location pin"></div>
-        <p id="map-fallback" class="map-fallback" hidden>The map could not load. You can still enter and convert coordinates above.</p>
-        <div class="map-footer"><span>Use + and − to zoom. Map displays the Web Mercator area.</span><span>City data: <a href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noopener noreferrer">Open-Meteo</a> / <a href="https://www.geonames.org/" target="_blank" rel="noopener noreferrer">GeoNames</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span></div>
+        <p id="reverse-error" class="field-error" role="alert"></p>
+        <div class="reverse-answer" id="reverse-result-wrap" hidden>
+          <span>LATITUDE, LONGITUDE · EPSG:4326</span>
+          <output id="reverse-result" for="reverse-x reverse-y"></output>
+        </div>
       </section>
 
       <footer><span>FIELDNOTES / COORDINATE CONVERTER</span><span>WGS 84 INPUT → EPSG:3857 + DEGREE FORMATS</span></footer>

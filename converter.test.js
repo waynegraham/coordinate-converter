@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { parseCoordinate, formatCoordinate, formatPair, projectToWebMercator } from "./converter.js";
+import { parseCoordinate, formatCoordinate, formatPair, projectToWebMercator, unprojectFromWebMercator } from "./converter.js";
 
 test("parses decimal degrees, decimal minutes, and DMS", () => {
   assert.equal(parseCoordinate("40.446111", "latitude"), 40.446111);
@@ -26,7 +26,7 @@ test("formats known values and rounds across a minute boundary", () => {
   assert.equal(formatPair(40.5, -79.5, "signed"), "40.50000000, -79.50000000");
 });
 
-test("projects WGS 84 degrees to EPSG:3857 X/Y metres", () => {
+test("projects WGS 84 degrees to EPSG:3857 X/Y meters", () => {
   const origin = projectToWebMercator(0, 0);
   assert.deepEqual(origin, { x: 0, y: 0 });
 
@@ -40,4 +40,21 @@ test("projects WGS 84 degrees to EPSG:3857 X/Y metres", () => {
   assert.ok(Math.abs(west.y + paris.y) < 1e-8);
   assert.throws(() => projectToWebMercator(85.061, 0), /85.06/);
   assert.throws(() => projectToWebMercator(0, 181), /valid latitude/);
+});
+
+test("converts EPSG:3857 meters back to decimal degrees", () => {
+  const { x, y } = projectToWebMercator(21.49012, 39.18624);
+  const point = unprojectFromWebMercator(x, y);
+  assert.ok(Math.abs(point.latitude - 21.49012) < 1e-10);
+  assert.ok(Math.abs(point.longitude - 39.18624) < 1e-10);
+
+  const example = unprojectFromWebMercator(222638.98, 6274861.39);
+  assert.ok(Math.abs(example.latitude - 49) < 1e-6);
+  assert.ok(Math.abs(example.longitude - 2) < 1e-6);
+  const southwest = unprojectFromWebMercator(-x, -y);
+  assert.ok(Math.abs(southwest.latitude + 21.49012) < 1e-10);
+  assert.ok(Math.abs(southwest.longitude + 39.18624) < 1e-10);
+  assert.throws(() => unprojectFromWebMercator(Infinity, 0), /finite/);
+  assert.throws(() => unprojectFromWebMercator(20037509, 0), /outside/);
+  assert.throws(() => unprojectFromWebMercator(0, 20048967), /outside/);
 });

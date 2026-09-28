@@ -5,6 +5,10 @@ const DIRECTIONS = {
 
 const WEB_MERCATOR_RADIUS = 6378137;
 const WEB_MERCATOR_MAX_LATITUDE = 85.06;
+const WEB_MERCATOR_MAX_X = Math.PI * WEB_MERCATOR_RADIUS;
+const WEB_MERCATOR_MAX_Y = WEB_MERCATOR_RADIUS * Math.asinh(
+  Math.tan(WEB_MERCATOR_MAX_LATITUDE * Math.PI / 180),
+);
 
 /**
  * Read one latitude or longitude in decimal degrees, decimal minutes, or DMS.
@@ -116,7 +120,7 @@ export function formatPair(latitude, longitude, format) {
   return `${formatCoordinate(latitude, "latitude", format)}, ${formatCoordinate(longitude, "longitude", format)}`;
 }
 
-/** Convert WGS 84 latitude/longitude in degrees to EPSG:3857 X/Y in metres. */
+/** Convert WGS 84 latitude/longitude in degrees to EPSG:3857 X/Y in meters. */
 export function projectToWebMercator(latitude, longitude) {
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude) ||
       Math.abs(latitude) > 90 || Math.abs(longitude) > 180) {
@@ -131,5 +135,19 @@ export function projectToWebMercator(latitude, longitude) {
   return {
     x: WEB_MERCATOR_RADIUS * longitudeRadians,
     y: WEB_MERCATOR_RADIUS * Math.asinh(Math.tan(latitudeRadians)),
+  };
+}
+
+/** Convert EPSG:3857 X/Y in meters back to WGS 84 decimal degrees. */
+export function unprojectFromWebMercator(x, y) {
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    throw new RangeError("Enter finite X and Y values in meters.");
+  }
+  if (Math.abs(x) > WEB_MERCATOR_MAX_X || Math.abs(y) > WEB_MERCATOR_MAX_Y) {
+    throw new RangeError("X or Y is outside the EPSG:3857 area.");
+  }
+  return {
+    latitude: Math.atan(Math.sinh(y / WEB_MERCATOR_RADIUS)) * 180 / Math.PI,
+    longitude: x / WEB_MERCATOR_RADIUS * 180 / Math.PI,
   };
 }
