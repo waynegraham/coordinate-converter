@@ -3,6 +3,9 @@ const DIRECTIONS = {
   longitude: { positive: "E", negative: "W", limit: 180 },
 };
 
+const WEB_MERCATOR_RADIUS = 6378137;
+const WEB_MERCATOR_MAX_LATITUDE = 85.06;
+
 /**
  * Read one latitude or longitude in decimal degrees, decimal minutes, or DMS.
  * Examples: -79.982222, 79° 58.9333′ W, 79° 58′ 56″ W.
@@ -103,8 +106,30 @@ export function formatCoordinate(value, axis, format) {
 }
 
 export function formatPair(latitude, longitude, format) {
+  if (format === "epsg3857") {
+    const { x, y } = projectToWebMercator(latitude, longitude);
+    return `${x.toFixed(2)}, ${y.toFixed(2)}`;
+  }
   if (format === "signed") {
     return `${latitude.toFixed(8)}, ${longitude.toFixed(8)}`;
   }
   return `${formatCoordinate(latitude, "latitude", format)}, ${formatCoordinate(longitude, "longitude", format)}`;
+}
+
+/** Convert WGS 84 latitude/longitude in degrees to EPSG:3857 X/Y in metres. */
+export function projectToWebMercator(latitude, longitude) {
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude) ||
+      Math.abs(latitude) > 90 || Math.abs(longitude) > 180) {
+    throw new RangeError("Enter valid latitude and longitude in degrees.");
+  }
+  if (Math.abs(latitude) > WEB_MERCATOR_MAX_LATITUDE) {
+    throw new RangeError("EPSG:3857 is defined only between 85.06°S and 85.06°N.");
+  }
+
+  const longitudeRadians = longitude * Math.PI / 180;
+  const latitudeRadians = latitude * Math.PI / 180;
+  return {
+    x: WEB_MERCATOR_RADIUS * longitudeRadians,
+    y: WEB_MERCATOR_RADIUS * Math.asinh(Math.tan(latitudeRadians)),
+  };
 }

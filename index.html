@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f5f3ed">
-    <meta name="description" content="Convert latitude and longitude between decimal degrees, decimal minutes, and degrees, minutes, seconds.">
+    <meta name="description" content="Convert WGS 84 latitude and longitude into EPSG:3857 metres and common degree formats.">
     <title>Coordinate Converter</title>
     <link rel="stylesheet" href="./styles.css">
     <script type="module" src="./app.js"></script>
@@ -19,13 +19,13 @@
       <section class="intro" aria-labelledby="page-title">
         <div class="eyebrow"><span class="eyebrow-line"></span> GIS MADE SIMPLE</div>
         <h1 id="page-title">Coordinates,<br><em>made clear.</em></h1>
-        <p>Convert latitude and longitude between common degree formats. Enter what you have; get every format you need.</p>
+        <p>Turn WGS 84 latitude and longitude into Web Mercator metres and common degree formats. Enter what you have; get every format you need.</p>
       </section>
 
       <div class="workspace">
         <section class="input-panel" aria-labelledby="input-heading">
           <div class="section-heading"><span class="step">01</span><h2 id="input-heading">Your coordinates</h2></div>
-          <p class="section-help">Use decimal degrees, degrees + decimal minutes, or degrees + minutes + seconds. Add N, S, E, or W if needed.</p>
+          <p class="section-help">Enter WGS 84 (EPSG:4326) coordinates as decimal degrees, decimal minutes, or degrees + minutes + seconds. Add N, S, E, or W if needed.</p>
           <form id="converter-form" novalidate>
             <div class="field">
               <label for="latitude"><span>LATITUDE</span><span class="field-range">N / S · ±90°</span></label>
@@ -47,25 +47,29 @@
         </section>
 
         <section class="output-panel" aria-labelledby="output-heading">
-          <div class="section-heading"><span class="step">02</span><h2 id="output-heading">All formats</h2></div>
-          <p class="section-help">Results update as you type. Each pair is shown latitude first, longitude second.</p>
+          <div class="section-heading"><span class="step">02</span><h2 id="output-heading">Coordinate results</h2></div>
+          <p class="section-help">Results update as you type. EPSG:3857 is X, Y in metres; degree formats are latitude, longitude.</p>
           <div id="empty-state" class="empty-state" hidden>Enter valid latitude and longitude values to see your conversions.</div>
           <div id="results" class="results">
             <div class="result-card featured">
-              <div class="result-head"><div><span class="result-index">01 / DECIMAL DEGREES</span><h3>Signed decimal</h3></div><button type="button" class="copy-button" data-copy="Decimal degrees" aria-label="Copy signed decimal coordinates">Copy <span aria-hidden="true">↗</span></button></div>
-              <p class="result-value" data-format="signed"></p>
-              <span class="result-note">Best for maps, APIs, and spreadsheets</span>
+              <div class="result-head"><div><span class="result-index">01 / EPSG:3857 · METRES</span><h3>Web Mercator</h3></div><button type="button" class="copy-button" data-copy="EPSG:3857 coordinates" aria-label="Copy EPSG 3857 X and Y coordinates">Copy <span aria-hidden="true">↗</span></button></div>
+              <p class="result-value" data-format="epsg3857"></p>
+              <span class="result-note">X EASTING, Y NORTHING · AVAILABLE TO ±85.06° LATITUDE</span>
             </div>
             <div class="result-card">
-              <div class="result-head"><div><span class="result-index">02 / DECIMAL DEGREES</span><h3>With directions</h3></div><button type="button" class="copy-button" data-copy="Directional degrees" aria-label="Copy directional decimal coordinates">Copy <span aria-hidden="true">↗</span></button></div>
+              <div class="result-head"><div><span class="result-index">02 / EPSG:4326 · DECIMAL DEGREES</span><h3>Signed decimal</h3></div><button type="button" class="copy-button" data-copy="Decimal degrees" aria-label="Copy signed decimal coordinates">Copy <span aria-hidden="true">↗</span></button></div>
+              <p class="result-value" data-format="signed"></p>
+            </div>
+            <div class="result-card">
+              <div class="result-head"><div><span class="result-index">03 / EPSG:4326 · DECIMAL DEGREES</span><h3>With directions</h3></div><button type="button" class="copy-button" data-copy="Directional degrees" aria-label="Copy directional decimal coordinates">Copy <span aria-hidden="true">↗</span></button></div>
               <p class="result-value" data-format="dd"></p>
             </div>
             <div class="result-card">
-              <div class="result-head"><div><span class="result-index">03 / DEGREES + MINUTES</span><h3>Decimal minutes</h3></div><button type="button" class="copy-button" data-copy="Decimal minutes" aria-label="Copy decimal minute coordinates">Copy <span aria-hidden="true">↗</span></button></div>
+              <div class="result-head"><div><span class="result-index">04 / EPSG:4326 · DEGREES + MINUTES</span><h3>Decimal minutes</h3></div><button type="button" class="copy-button" data-copy="Decimal minutes" aria-label="Copy decimal minute coordinates">Copy <span aria-hidden="true">↗</span></button></div>
               <p class="result-value" data-format="ddm"></p>
             </div>
             <div class="result-card">
-              <div class="result-head"><div><span class="result-index">04 / DEGREES + MINUTES + SECONDS</span><h3>Traditional DMS</h3></div><button type="button" class="copy-button" data-copy="Degrees minutes seconds" aria-label="Copy degrees minutes seconds coordinates">Copy <span aria-hidden="true">↗</span></button></div>
+              <div class="result-head"><div><span class="result-index">05 / EPSG:4326 · DEGREES + MINUTES + SECONDS</span><h3>Traditional DMS</h3></div><button type="button" class="copy-button" data-copy="Degrees minutes seconds" aria-label="Copy degrees minutes seconds coordinates">Copy <span aria-hidden="true">↗</span></button></div>
               <p class="result-value" data-format="dms"></p>
             </div>
           </div>
@@ -73,7 +77,7 @@
         </section>
       </div>
 
-      <footer><span>FIELDNOTES / COORDINATE CONVERTER</span><span>GEOGRAPHIC COORDINATES · ANGULAR FORMATS</span></footer>
+      <footer><span>FIELDNOTES / COORDINATE CONVERTER</span><span>WGS 84 INPUT → EPSG:3857 + DEGREE FORMATS</span></footer>
     </main>
   </body>
 </html>

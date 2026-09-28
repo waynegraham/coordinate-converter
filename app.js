@@ -39,7 +39,14 @@ function convert() {
   }
 
   for (const output of results.querySelectorAll("[data-format]")) {
-    output.textContent = formatPair(latitude, longitude, output.dataset.format);
+    const button = output.closest(".result-card").querySelector("[data-copy]");
+    try {
+      output.textContent = formatPair(latitude, longitude, output.dataset.format);
+      button.disabled = false;
+    } catch (error) {
+      output.textContent = error.message;
+      button.disabled = true;
+    }
   }
   status.textContent = "Coordinates converted.";
 }

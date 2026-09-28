@@ -48,6 +48,7 @@ h2 { margin: 0; font-family: Georgia, serif; font-weight: 500; font-size: 29px; 
 h3 { font-family: Georgia, serif; font-weight: 500; font-size: 20px; margin: 5px 0 0; }
 .copy-button { background: transparent; color: #4d765a; border: 1px solid #cbdacc; border-radius: 5px; padding: 7px 9px; font-family: SFMono-Regular, Consolas, monospace; font-size: 10px; white-space: nowrap; }
 .copy-button:hover { background: #e9f0e7; }
+.copy-button:disabled { opacity: .45; cursor: not-allowed; }
 .featured .copy-button { color: #eaf7e9; border-color: #8dac96; }
 .featured .copy-button:hover { background: #47705a; }
 .result-value { margin: 17px 0 0; font-family: SFMono-Regular, Consolas, monospace; font-size: clamp(13px, 1.35vw, 17px); line-height: 1.6; overflow-wrap: anywhere; letter-spacing: -.04em; }
