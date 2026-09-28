@@ -32,7 +32,7 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site
-          cp index.html styles.css app.js converter.js _site/
+          cp index.html styles.css app.js converter.js map.js city-search.js _site/
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload site

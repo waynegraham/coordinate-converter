@@ -1,4 +1,5 @@
 import { formatPair, parseCoordinate } from "./converter.js";
+import { initMap } from "./map.js";
 
 const form = document.querySelector("#converter-form");
 const latitudeInput = document.querySelector("#latitude");
@@ -7,6 +8,7 @@ const results = document.querySelector("#results");
 const emptyState = document.querySelector("#empty-state");
 const status = document.querySelector("#status");
 const sampleButton = document.querySelector("#sample-button");
+let mapController;
 
 function setError(input, message) {
   const error = document.querySelector(`#${input.id}-error`);
@@ -48,6 +50,7 @@ function convert() {
       button.disabled = true;
     }
   }
+  mapController?.setPin(latitude, longitude);
   status.textContent = "Coordinates converted.";
 }
 
@@ -80,5 +83,11 @@ results.addEventListener("click", async (event) => {
     status.textContent = "Clipboard access is unavailable. Select the result to copy it.";
   }
 });
+
+mapController = initMap((latitude, longitude) => {
+  latitudeInput.value = latitude.toFixed(8);
+  longitudeInput.value = longitude.toFixed(8);
+  convert();
+}, parseCoordinate(latitudeInput.value, "latitude"), parseCoordinate(longitudeInput.value, "longitude"));
 
 convert();

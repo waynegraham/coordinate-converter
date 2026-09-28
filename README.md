@@ -12,11 +12,17 @@ Examples:
 
 The degree inputs and outputs are WGS 84 geographic coordinates (EPSG:4326). Only the **Web Mercator** result is EPSG:3857. It shows X (easting), then Y (northing), in metres. The app does not infer or transform other source datums. EPSG:3857 is available between 85.06°S and 85.06°N; outside that area, degree conversions remain available but the projected result is withheld.
 
+## Map and city search
+
+The map lets users click a location or drag the pin to update both coordinate fields and every output. Typing coordinates moves the pin. Search a city by name, optionally followed by a country or region, then choose a match to zoom to it.
+
+Map tiles come from OpenStreetMap, with attribution on the map. City search uses Open-Meteo's GeoNames-based geocoding API; its free endpoint is for **non-commercial use only**. The browser requests city matches only when a user submits a search. Leaflet loads from a pinned CDN version. The map and city search need network access, while direct coordinate conversion still works without them.
+
 Run the converter tests with `npm test` (Node.js 18 or later). No install step is needed.
 
 ## Publish on GitHub Pages
 
-The included GitHub Actions workflow tests and publishes the four site files on every push to `main`.
+The included GitHub Actions workflow tests and publishes the site files on every push to `main`.
 
 1. Create a GitHub repository and push this project's `main` branch to it.
 2. In the repository, open **Settings → Pages**. Under **Build and deployment**, set **Source** to **GitHub Actions**.
